@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Fira Sans Light";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/css/fira/sans/FiraSans-Light-webfont.eot?#iefix") format("embedded-opentype"), url("/css/fira/sans/FiraSans-Light-webfont.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/css/fira/sans/FiraSans-Regular-webfont.eot?#iefix") format("embedded-opentype"), url("/css/fira/sans/FiraSans-Regular-webfont.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Fira Mono";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/css/fira/mono/FiraMono-Regular-webfont.eot?#iefix") format("embedded-opentype"), url("/css/fira/mono/FiraMono-Regular-webfont.woff") format("woff");
+}
+
+
