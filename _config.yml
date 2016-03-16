@@ -39,7 +39,7 @@ harmony:
   show_disclaimer: true
 
 # Conversion / Build settings
-markdown: redcarpet
+markdown: kramdown
 highlighter: rouge
 
 # Permalinks

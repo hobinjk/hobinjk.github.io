@@ -22,7 +22,7 @@ No optimization would be complete without a naive implementation to poke and
 prod into a perfected program. In this case, it is a simple triply-nested for
 loop performing the multiplication of two 1024 by 1024 matrices.
 
-```javascript
+~~~ javascript
 function matMul(a, b, c) {
   var n = 1024;
   for (var i = 0; i < n; i++) {
@@ -33,7 +33,7 @@ function matMul(a, b, c) {
     }
   }
 }
-```
+~~~
 
 
 # Testing Methods
@@ -81,7 +81,7 @@ storing each matrix as a single Float64Array with manually computed indexing.
 While computing the index as `i * n +  j` yielded no improvement, calculating
 the index as `(i << LOG_N) | j` yielded the slight speedup.
 
-```javascript
+~~~ javascript
 for (var i = 0; i < n; i++) {
   for (var j = 0; j < n; j++) {
     for (var k = 0; k < n; k++) {
@@ -92,7 +92,7 @@ for (var i = 0; i < n; i++) {
     }
   }
 }
-```
+~~~
 
 
 # Transposition
@@ -108,7 +108,7 @@ second matrix so that the computer can read both input matrices left-to-right.
 
 Note that this uses standard aggregated indices for clarity:
 
-```javascript
+~~~ javascript
 for (var i = 0; i < n; i++) {
   for (var j = 0; j < n; j++) {
     for (var k = 0; k < n; k++) {
@@ -116,7 +116,7 @@ for (var i = 0; i < n; i++) {
     }
   }
 }
-```
+~~~
 
 
 # Tiling
@@ -128,7 +128,7 @@ processor's cache. Unfortunately, this optimization had no actual effect,
 serving as a cautionary tale for pushing low-level tricks into high-level
 languages.
 
-```javascript
+~~~ javascript
 for (var ih = 0; ih < n; ih += tileSize) {
   for (var jh = 0; jh < n; jh += tileSize) {
     for (var kh = 0; kh < n; kh += tileSize) {
@@ -144,7 +144,7 @@ for (var ih = 0; ih < n; ih += tileSize) {
     }
   }
 }
-```
+~~~
 
 
 # SIMD
@@ -162,7 +162,7 @@ Float32x4, which works on four values at once instead of two, delivered an 18x
 speedup. While the youthful SIMD API has some rough patches, it is still
 impressively powerful.
 
-```javascript
+~~~ javascript
 for (var i = 0; i < n; i++) {
 	for (var jh = 0; jh < n; jh += 4) {
 		for (var k = 0; k < n; k += 4) {
@@ -177,7 +177,7 @@ for (var i = 0; i < n; i++) {
 		}
 	}
 }
-```
+~~~
 
 
 # Parallelization
