@@ -1,0 +1,86 @@
+---
+layout: post
+title: "CMS.609 Program 0.5"
+date: 2016-03-16 12:00:00
+categories: javascript cms.609 art
+---
+
+A class I am taking this semester, *CMS.609: The Word Made Digital*, involves
+the creation of four to eight computer programs. These programs are intended to
+explore the intersection of technology with literature. I will write a blog
+post for each program to discuss my process and artistic intent. This first
+entry details the creation of Program 0.5. What follows is a story of
+the wonderful benefits of overdesigning a simple system.
+
+First, context. CMS.609's professor, Nick Montfort, presented several text
+generators including Nanette Wylde's [Electronic
+Flipbooks](http://preneo.org/nwylde/flipbooks/index.html) to guide us in the creation of a "very simple text generator that is nevertheless interesting." The [course
+description](http://nickm.com/classes/the_word_made_digital/2016_spring/) has
+the other examples. Many of these generators can be viewed as the guided random
+choice of words in a frame. I viewed my assignment as determining a perfect
+union of words and frame.
+
+Drawing from the historical computation vibe of the Commodore-64-based
+examples, I chose to develop a piece using interactive fiction as a frame. In
+it, a computer would play through an IF game at random. The overdesigning began
+when I decided it would be fun to write this IF game and its engine from
+scratch. The engine I designed modeled the game as actions, responses, and
+words. While I eventually generalized responses as words, the all-encompassing
+engine was as much of a blessing as a curse.
+
+I probably could have realized that I was taking the first steps down a dark
+path when I decided to create a tiny domain-specific language for representing
+the game's sentences. Instead of having to write `"I " + randomVerb() + " the "
++ randomNoun()`, I wanted to be able to write `"I $verb the $noun"`. Between
+the potential productivity gains and the cool challenge of writing a DSL I
+desperately desired the dollar signs.
+
+The first bug appeared moments after the first version's completion. I decided
+that there should be adjectives for items, and that this would be represented
+as `a $itemAdjective $item`. Unfortunately, this was turning into `a
+swordAdjective goblet` instead of `a shiny goblet`. The DSL engine was
+selecting to interpret the phrase as `a ($item)Adjective $item` because I
+defined `$item` before `$itemAdjective`. There were three possible solutions to
+this problem. The first would be to live in fear of the engine, moving the
+declaration of `itemAdjective` before `item` according to its whims. The second
+would be to force the engine into reordering its declarations, obeying its
+cruel leader without question. The third was to lovingly teach the engine how
+it could stop making prefix-based errors in the future. The nice option was
+also the only option that did not feel hacky and brittle. Instead of relying on
+the specific implementation, I instead told the engine that keywords were of
+the form `$something` or `$somethingElse`. With this knowledge it knew to
+continue reading after the `$item` in `$itemAdjective`. While not fitting into
+the happy tone of this story, the actual fix was to teach the engine greed in
+the form of the greedy regular expression `/\$\w+/`. This supplanted the
+for-every-keyword loop of find-and-replacing with a targeted, efficient search.
+
+
+The dark and winding road did not end there. It instead wended its way into a
+thicket of arbitrarily nested keyword substitutions. A standard substitution
+starts with a base sentence, like `You see a $itemAdjective $item.` After
+the first step of substitutions, it becomes `You see a $gem-encrusted sword.`
+The final selection then fills in `$gem`, leaving `You see a ruby-encrusted
+sword.` A more detailed representation of this execution is as follows:
+
+~~~
+You see a $itemAdjective $item.
+$itemAdjective -> $gem-encrusted
+$item -> sword
+
+You see a $gem-encrusted sword.
+$gem -> ruby
+
+You see a ruby-encrusted sword.
+~~~
+
+Note that this is completely unnecessary for an MVP as `"$gem-encrusted"` could
+instead be manually expanded to `["ruby-encrusted", "sapphire-encrusted",
+"garnet-encrusted"]`, etc. through a bit of copy-pasting. Luckily, the generic
+design required to fix the `$itemAdjective` bug made supporting these recursive
+substitutions a simple matter of inserting a while loop to make the engine
+continue until it sees no keywords.
+
+At the end of the day, the overcomplicated but generic design ended up saving
+just as much time as it cost. As an added bonus, it was more educational than
+hiding bugs through copy-pasting. To paraphrase a saying from Germany, why do
+it quickly when you can do it difficultly?
