@@ -1,0 +1,291 @@
+---
+layout: post
+title: "Let's Make a JavaScript Bundler!"
+date: 2016-05-28 12:00:00
+categories: javascript algorithms
+---
+
+WebPack, Browserify, and the billion other JavaScript bundlers out there are
+black boxes into which we feed source code. While these existing tools work
+quickly and correctly, it's educational to see the challenges that went in to
+developing them. This blog will lead you through the journey of creating a
+JavaScript bundler. Along the way you will learn about abstract syntax trees,
+digraphs, code generation, traversal orders, scoping rules, and function
+isolation.
+
+## Problem Specification
+
+What does WebPack do anyway? My goal was to take one file that imports other
+files and turn that into only one bundled file. For complexity's sake, I chose
+to support ES6-style imports and exports, which you can read more about on the
+always wonderful MDN
+[here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export).
+I could then fully specify the problem. I wanted to take an entry point, like
+this:
+
+```
+import a from './a.js';
+a()
+```
+
+an included file, like this:
+
+```
+export default function a() {
+  console.log('Hello world!');
+}
+```
+
+and get a file that will print "Hello world!".
+
+In terms of syntax, this means supporting the following constructs:
+
+```javascript
+export default expr;
+export let a = 2;
+export var b = 3;
+export const c = 'c';
+export function d() {
+}
+
+import a from 'source'
+import {b, c} from 'source'
+```
+
+## Implementation
+
+### Step One: AST Printing [\[138e34b\]](https://github.com/hobinjk/sapling/blob/138e34b54a6f016f061dca2ee633cf539d2a025d/sapling.js)
+I first needed to figure out how to take a JavaScript file and get all of its
+export and import declarations. In technical terms, I wanted to parse a file to
+get its AST (abstract syntax tree). As a first step, the code visits every node
+in this tree, printing the node out if it's an export or import.
+
+For actually creating this code, [AST Explorer](https://astexplorer.net/) is
+invaluable. We merely need to type the example code above to see exactly what
+its AST will look like. AST Explorer also allows us to select the parsing
+engine to use. This project uses Recast for its ability to rewrite ASTs.
+
+### Step Two: File Info Printing [\[b406f0a\]](https://github.com/hobinjk/sapling/blob/b406f0a6e05d0ad6f9682c0e6cf5b6d4b265d844/sapling.js)
+
+With printing in place, I thought the next step was to store the import and
+export information in an object. For each export the code stores the exported
+identifier and its exported name (or "default"). For each import the code
+stores its identifier, local name, and source. This information can be thought of abstractly
+as a directed graph (digraph). By pruning orphans or performing other
+operations on this digraph we can easily create powerful tools like tree
+shaking. However, this abstraction is too removed from the code generation of
+I needed for the bundling process.
+
+### Step Three: Recasting [\[ed95f1f\]](https://github.com/hobinjk/sapling/blob/ed95f1fbb7bfc5028f09c975b7a7e82c4a38bea1/sapling.js)
+
+Now I needed to produce executable code. This was a straightforward extension
+of the previous work because the modification simply transforms import and
+export to equivalent statements.
+
+The overall target post-transform looks like this:
+
+```javascript
+(function(scope) {
+  // export default function a() {}
+  function a() {
+    console.log('Hello world!');
+  }
+  scope['a.js']['default'] = a;
+})(scope);
+(function(scope) {
+  // import a from a.js;
+  var a = scope['a.js']['default']
+  a();
+})(scope);
+```
+
+Each `import` becomes `var localName = scope[source][exportedName];`, and each
+`export` becomes `scope[source][exportedName] = localName;`.
+
+To perform this transformation, we can use Recast's included-by-default AST
+generation functions in addition to its printing functionality. It turns out
+that Recast was designed to do exactly this type of AST modification.
+
+### Bug One: Reversing DFS Order [\[b2a7e0a\]](https://github.com/hobinjk/sapling/blob/b2a7e0adb2ff5190f2ec1b504964dab631e9584a/sapling.js)
+
+This code uses the wrong traversal order, with each import statement preceding
+its corresponding export.
+
+It generates this:
+
+```javascript
+var test2 = scope["./testmulti.js"]["test2"];
+var test3 = scope["./testmulti.js"]["test3"];
+
+scope["test.js"]["default"] = function test() {
+  console.log('test!');
+};
+
+test();
+test2();
+test3();
+
+var test3 = scope["./test3.js"]["default"];
+scope["./testmulti.js"]["test3"] = test3;
+
+scope["./testmulti.js"]["test2"] = function test2() {
+  console.log('testmulti');
+};
+
+scope["./test3.js"]["default"] = function() {
+  console.log('test3!');
+};
+```
+
+Simply moving the concatenation line below the for loop results in the more
+correct output:
+
+```javascript
+var scope = {
+  "test.js": {},
+  "./testmulti.js": {},
+  "./test3.js": {}
+};
+
+scope["./test3.js"]["default"] = function() {
+  console.log('test3!');
+};
+
+var test3 = scope["./test3.js"]["default"];
+scope["./testmulti.js"]["test3"] = test3;
+
+scope["./testmulti.js"]["test2"] = function test2() {
+  console.log('testmulti');
+};
+
+var test2 = scope["./testmulti.js"]["test2"];
+var test3 = scope["./testmulti.js"]["test3"];
+
+scope["test.js"]["default"] = function test() {
+  console.log('test!');
+};
+
+test();
+test2();
+test3();
+```
+
+### Bug Two: Scope Object Bootstrapping [\[828826f\]](https://github.com/hobinjk/sapling/blob/828826ffaf9f8eef71df1eef1621e5dc4aabddd1/sapling.js)
+
+There's also the small problem of the code's reliance on this `scope` object.
+I needed to initialize it based on the complete set of imports and exports
+expected by the code. Conveniently, I knew how to do this from step two's file
+info printing and was able to generate the following object through a simple
+code generation step guided by data that was already lying around.
+
+```javascript
+var scope = {
+  "test.js": {},
+  "./testmulti.js": {},
+  "./test3.js": {}
+};
+```
+
+### Bug Three: Scoping Rules [\[40b87be\]](https://github.com/hobinjk/sapling/blob/40b87be02b6c808f1a55a73b022fde92a40fe92e/sapling.js)
+
+However, it turns out this output, while pretty, is not correct JavaScript.
+Because of JavaScript's scoping rules, the attempt to call the function `b`
+shown below will fail because `b` exists in only the statement's scope and not
+the block's (the entire file in this case). In AST terms, this is the
+difference between a FunctionExpression (`var f = function() {}`) vs
+FunctionDeclaration (`function f() {}`).
+
+Now we get executable output:
+
+```javascript
+var scope = {
+  "test.js": {},
+  "./testmulti.js": {},
+  "./test3.js": {}
+};
+
+scope["./test3.js"]["default"] = function() {
+  console.log('test3!');
+};
+
+var test3 = scope["./test3.js"]["default"];
+scope["./testmulti.js"]["test3"] = test3;
+
+function test2() {
+  console.log('testmulti');
+}
+
+scope["./testmulti.js"]["test2"] = test2;
+
+var test2 = scope["./testmulti.js"]["test2"];
+var test3 = scope["./testmulti.js"]["test3"];
+
+function test() {
+  console.log('test!');
+}
+
+scope["test.js"]["default"] = test;
+
+test();
+test2();
+test3();
+```
+
+### Bug Three: Isolation [\[9d2a023\]](https://github.com/hobinjk/sapling/blob/9d2a023ae54b68aebefbe131151b361d8aea88d9/sapling.js)
+
+The final issue with this output is that it doesn't provide one of the key
+features of modularized JavaScript: there is no isolation between files. If two
+files have a variable with the same name, there is the potential for some
+very strange behavior.
+
+Luckily, JavaScript's function closures provide isolated scopes for all of our
+files. A simple utility function later, each file gets its own local scope to
+use as it pleases while still exporting properly to the global scope.
+
+```javascript
+var scope = {
+  "test.js": {},
+  "./testmulti.js": {},
+  "./test3.js": {}
+};
+
+(function(scope) {
+  scope["./test3.js"]["default"] = function() {
+    console.log('test3!');
+  };
+})(scope);
+
+(function(scope) {
+  var test3 = scope["./test3.js"]["default"];
+  scope["./testmulti.js"]["test3"] = test3;
+
+  function test2() {
+    console.log('testmulti');
+  }
+
+  scope["./testmulti.js"]["test2"] = test2;
+})(scope);
+
+(function(scope) {
+  var test2 = scope["./testmulti.js"]["test2"];
+  var test3 = scope["./testmulti.js"]["test3"];
+
+  function test() {
+    console.log('test!');
+  }
+
+  scope["test.js"]["default"] = test;
+
+  test();
+  test2();
+  test3();
+})(scope);
+```
+
+## Conclusion
+
+The bundler works! It creates an executable file with properly isolated
+imports. Along the way I used recast's wonderful JavaScript parsing and AST
+modification to simplify the bundler's design. Hopefully you learned something
+from one of the fun scenarios I encountered. If not, stay tuned for part 2:
+tree shaking!
