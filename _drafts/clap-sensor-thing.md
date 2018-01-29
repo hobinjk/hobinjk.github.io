@@ -5,9 +5,9 @@ date:   2018-01-26 15:00:00
 categories: javascript wot iot
 ---
 
-My goal is to write an adapter for making my lights clap-activated! This
-requires a microphone as input, so I'll be plugging one into my Gateway and
-seeing what I can do with it.
+Our goal in this post is to write an adapter for making lights clap-activated!
+This requires a microphone as input, so I'll be plugging one into my Gateway
+and guiding you through setting it up as a clap-sensing Web Thing.
 
 ![clap on clap off](/assets/images/clap-on-clap-off.png)
 
