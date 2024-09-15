@@ -594,10 +594,10 @@ pre {
 }
 .gist .gist-file .gist-data {
   font-size: 12px;
+  line-height: 1.4;
   @include MQ(M) {
     font-size: 14px !important;
   }
-  line-height: 1.4;
 }
 .gist code {
   padding: 0;
@@ -637,7 +637,7 @@ p.post-meta {
   @include font-size(12px);
   overflow: hidden;
   display: block;
-  padding: 1em 0;
+  /* padding: 1em 0; */
   color: #7A7A7A;
   @include MQ(M) {
     @include font-size(16px);
