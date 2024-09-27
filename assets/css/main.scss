@@ -747,3 +747,40 @@ tbody tr:nth-child(odd) td,
 tbody tr:nth-child(odd) th {
   background-color: $base-05;
 }
+
+.portfolio-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-auto-rows: minmax(16rem, 1fr);
+  gap: 0.8rem;
+  width: 100%;
+}
+
+
+.portfolio-item {
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.portfolio-item:hover {
+  text-decoration: none;
+  border: none;
+  opacity: 0.9;
+  transform: translateY(-0.3rem);
+}
+
+.portfolio-hero {
+  height: 13rem;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.portfolio-title {
+  color: $base-00;
+  padding-bottom: 0.1rem;
+}
+
+.portfolio-subtitle {
+  color: $base-03;
+  font-size: 0.8rem;
+}
