@@ -1,0 +1,80 @@
+---
+layout: post
+title: "Tea Timer"
+date: 2024-10-05 15:00:00
+categories: hardware micropython
+---
+
+Exhuming the lede with a video of the finished project. Look at how cool that
+is! Surely the journey to such a sublime experience was equally smooth.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IDi5ppbw2oY?si=TeJygsPI9pEV1LBC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+Brewing tea is a simple process of using water to extract the bits from tea
+leaves. Top minds have been doing this for several years, coming up with a
+general idea of how long one is meant to leave the leaves in the water.
+Unfortunately, as a rather forgetful person, my usual tea steep of 15-30
+minutes falls outside of the expert opinions on the matter. The normal way to
+fix this would be a phone timer, but my forgetfulness has gained the ability to
+silence the timer and move on without informing my brain. I needed a timer that
+would require me to collect my tea.
+
+Now the easy solution would be to buy an egg timer and put it near the tea
+kettle but that would make this a rather short blog post. Also, it would cost
+money! Outrageous! Instead, I set my sights on the
+free-right-now-since-I-paid-for-it-in-the-past [Adafruit NeoTrellis
+M4](https://www.adafruit.com/product/4020). With 32 light-up buttons and the
+ability to play back sound files it was the perfect block of wood to hack out
+a timer that would get the job done.
+
+After a short montage of AdaFruit's excellent tutorials and my own
+CircuitPython programming, I had a useful creation. Pressing a button (mapped
+out on the colors of the leds, very straightforwards!) would result in a timer
+counting down and reminding me of my tea's existence with a bright flashing
+light in my peripheral vision. Now that I finished this project, it was time
+for the project to really begin.
+
+> Wait, what?
+
+It was terrible! I had to power cycle it every time I wanted to start a new
+timer! That's the worst! It was time to sand all the splinters and other sharp
+bits off of this unfinished hunk of wood.
+
+# Shoring up the foundation
+
+But first it was time to clean up the code, the coolest and most exciting thing
+to do at any stage of a project. It was tempting to cut out this part of the
+post--silently suggesting that a divine light had guided my hand towards
+perfect code even while quickly iterating through versions--but no, there were
+flaws. The spring cleaning on the agenda was to trim away all of the
+unnecessary tutorial code and to replace hardcoded colors with the excellent
+`fancyled` library's palettes. Emboldened by this easy progress, I also threw
+in some audio with the idea that I would someday hook up an external speaker to
+the Trellis.
+
+# Start again
+
+The sharpest splinter on the board was having to restart the Trellis to get
+another timer going. I took all the code that ran the timer, shoved it in a
+forever-looping `while True:`, and moved on with my life. Well, moved on for
+as long as it took me to test the timer, as this shove-based coding (inspired
+by my shove-based cleaning) meant that the same button press that stopped the
+timer would also start the next timer due to the critical lack of a delay
+between loops. One delay later and I could finally plug the Trellis in by my
+kettle and call it a day.
+
+# Wait! It's still bad!
+
+After a few weeks of using my beloved tea timer I had a couple of Notes. First,
+one of my fussier teas demands a 2 minute 30 second steep. With my minimalist
+inputs, that wasn't happening and the leaves were crying. Next, I could still
+(somehow) miss the dramatic flashing lights coming from my speaker-less
+Trellis. When I'd finally rush to the blinking beacon in disarray, it would
+also not let me know how long it had been trying to get my attention. I bought
+[a cheap speaker that may as well have been purpose-built for using with the
+Trellis](https://www.sparkfun.com/products/14023) and solved both of the later
+problems. Finally, through learning to stop worrying about tea-crimes I laid
+the first problem to rest.
+
+The timer was still mediocre though, stay tuned for the thrilling conclusion of
+our saga!
