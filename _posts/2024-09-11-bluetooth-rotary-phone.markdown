@@ -6,10 +6,10 @@ categories: hardware bluetooth hackery
 ---
 
 Old technology is just the best! It clacks, thunks, and makes all the other
-tactile noises one could ever need. In high school I had the idea to make a
-rotary cell phone but when I priced out the fancy electronics required it was
-far outside of my budget in terms of both money and expertise. I buried the
-idea in my mind's bog of unused concepts and did a few things for a couple
+tactile noises one could ever need. I had the idea to make a rotary cell phone
+way back in high school, but when I priced out the fancy electronics required
+it was far outside of my budget in terms of both money and expertise. I buried
+the idea in my mind's bog of unused concepts and did a few things for a couple
 years.
 
 With those few things (college, jobs, marriage) out of the way and those couple
