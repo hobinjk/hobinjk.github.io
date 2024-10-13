@@ -5,10 +5,6 @@ date: 2024-10-05 15:00:00
 categories: hardware micropython
 ---
 
-Exhuming the lede with a video of the finished project. Look at how cool that
-is! Surely the journey to such a sublime experience was equally smooth.
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/IDi5ppbw2oY?si=TeJygsPI9pEV1LBC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Brewing tea is a simple process of using water to extract the bits from tea
 leaves. Top minds have been doing this for several years, coming up with a
@@ -16,8 +12,14 @@ general idea of how long one is meant to leave the leaves in the water.
 Unfortunately, as a rather forgetful person, my usual tea steep of 15-30
 minutes falls outside of the expert opinions on the matter. The normal way to
 fix this would be a phone timer, but my forgetfulness has gained the ability to
-silence the timer and move on without informing my brain. I needed a timer that
-would require me to collect my tea.
+silence the timer and move on without informing my brain. I embarked on a new
+project, creating a timer that would force me to collect my tea.
+
+In this post I document this excellent exercise in experimentation and interaction. If
+learning isn't compelling enough, I suggest watching this video of the finished
+timer to be overcome with jealousy:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IDi5ppbw2oY?si=TeJygsPI9pEV1LBC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Now the easy solution would be to buy an egg timer and put it near the tea
 kettle but that would make this a rather short blog post. Also, it would cost
