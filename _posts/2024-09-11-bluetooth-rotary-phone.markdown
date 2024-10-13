@@ -22,7 +22,8 @@ read on! It's not that difficult in the grand scheme of things.
 ![the finished phone](/assets/images/rotary/09_full_assembly.jpg)
 
 > Note: There are fewer photos than I'd like of this project's more fiddly
-> steps so this turned out a bit difficult in the grand scheme of things.
+> steps so following along may be a bit difficult in the grand scheme of
+> things.
 
 # Components
 
