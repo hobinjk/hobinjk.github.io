@@ -2,10 +2,10 @@
 layout: post
 title: "The Importance of User Testing (Tea Timer Too)"
 date: 2024-10-15 15:00:00
-categories: hardware micropython
+categories: hardware circuitpython
 ---
 
-In [part one](/hardware/micropython/2024/10/05/tea-timer/) of this series, I
+In [part one](/hardware/circuitpython/2024/10/05/tea-timer/) of this series, I
 described refining my tea timer as sanding off burrs. I did smooth out my
 surface-level experience, but my familiarity blinded me to fundamental cracks
 lurking below. The most powerful method for unburying these faults is user
@@ -33,8 +33,8 @@ lines of code and a brief test later, I had added the final improvement (for
 now!) to the tea timer: long pressing to cancel.
 
 The timer was now in a much better state thanks to my mom’s fresh perspective
-and all it cost was 17 cups of [Upton’s Traditional Chai
-Masala](https://www.uptontea.com/chai-tea/chai-loose-leaf-black-tea/p/V00171/)
+and all it cost was 17 cups of [Upton’s Traditional Masala
+Chai](https://www.uptontea.com/chai-tea/chai-loose-leaf-black-tea/p/V00171/)
 (not sponsored but would jump at the opportunity). Behold! Its final form!
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/IDi5ppbw2oY?si=TeJygsPI9pEV1LBC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
