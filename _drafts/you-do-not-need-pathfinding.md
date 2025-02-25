@@ -32,8 +32,38 @@ The first step I took was to list down the basic decisions a player needs to
 make during The Dragonfruitvoid. My list looked like this:
 
 - Don't fall off the edge!
+- Don't stand in the bad circles
 - Kill those crabs!
 - Push the orb to its targets
-- Don't stand in the bad circles
 
-These already fit into a hierarchy where I could use utility
+I had already ordered this list by importance: falling off the edge is an
+instant death while pushing the orb is something that just needs to get done at
+some point. This idea of importance maps exactly to that of utility. For the
+implementation in my game, I defined utility as the priority of an action
+between 0 (don't bother) and 1 (drop everything to get it done). The simplest
+implementation is the Don't Fall Off function which is usually a stand-in-place
+action with 0 utility, but becomes a move-to-center action with 1 utility if
+the AI player is close to the edge. The Kill Crab function is more complex.
+Instead of either being an emergency or nothing, the utility of killing crabs
+scales up as they become more of a threat and scales down if the player is too
+far away to hit it. A crab minding its own business: no issue, a crab about to
+collide with the orb and explode: big issue. Therefore, the utility of killing
+crabs scales based on their distance from the orb and the ease of hitting them. Similarly, the Push Orb
+function scales on whether the orb is happily on the way to its destination or
+if it needs its path adjusted. This leads to the first example of how a
+utility-based decision tree enables dynamic behavior to emerge. AI players near
+crabs will take them out while others ready to push the orb will shepherd it to
+its destination. Impressively, these four thoughts working in harmony were
+enough to clear three of the nine phases of The Dragonfruitvoid, but getting
+the remaining phases done required grafting new branches onto the decision
+tree.
+
+Up until this point, the decision tree was only a single layer deep, simply
+comparing a set of thoughts with utilities and choosing the most important.
+We can greatly improve the AI's performance by emulating what players in the
+real game do: assign roles within the group. Now, instead of being a bunch of clones
+each rushing between every possible responsibility, each player will have its
+own decision tree with a subset of branches to reduce its (virtual) cognitive
+load. In the orb phase, this means that the group can split into two teams that
+alternate pushing and crab killing to make sure that there's no chaos from
+swapping rapidly between priorities.
